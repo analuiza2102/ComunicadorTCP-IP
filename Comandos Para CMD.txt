@@ -1,0 +1,3 @@
+java -cp . org.example.ChatServer
+
+java -cp . org.example.ChatClient
