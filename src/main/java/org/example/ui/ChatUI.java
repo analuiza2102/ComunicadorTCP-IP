@@ -1,6 +1,5 @@
 package org.example.ui;
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -9,6 +8,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,6 +36,7 @@ public class ChatUI extends JFrame {
         chatArea = new JTextArea();
         chatArea.setEditable(false);
         chatArea.setLineWrap(true);
+        chatArea.setWrapStyleWord(true);
 
         // Campo de mensagem
         messageField = new JTextField();
@@ -60,6 +62,10 @@ public class ChatUI extends JFrame {
         userList = new JList<>(userModel);
         users = new HashSet<>();
 
+        // Adiciona o usuário que está logado na lista
+        users.add(nome);
+        userModel.addElement(nome);
+
         JPanel sidePanel = new JPanel(new BorderLayout());
         sidePanel.add(new JLabel("Usuários Conectados"), BorderLayout.NORTH);
         sidePanel.add(new JScrollPane(userList), BorderLayout.CENTER);
@@ -84,18 +90,20 @@ public class ChatUI extends JFrame {
                 try {
                     while ((mensagemRecebida = in.readLine()) != null) {
                         // Exibir mensagens recebidas, incluindo as do próprio usuário
-                        chatArea.append(mensagemRecebida + " ");
+                        chatArea.append(mensagemRecebida + "\n");
+                        chatArea.setCaretPosition(chatArea.getDocument().getLength());
 
+                        // Verificar se é uma mensagem de entrada de usuário
                         if (mensagemRecebida.contains("entrou no chat")) {
                             String userName = mensagemRecebida.split(" ")[0];
-                            if (!users.contains(userName)) {
+                            if (!users.contains(userName) && !userName.startsWith("[")) {
                                 users.add(userName);
                                 userModel.addElement(userName);
                             }
                         }
                     }
                 } catch (Exception e) {
-                    chatArea.append("Conexão encerrada. ");
+                    chatArea.append("Conexão encerrada.\n");
                 }
             }).start();
 
@@ -110,9 +118,14 @@ public class ChatUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String mensagem = messageField.getText();
                 if (!mensagem.isEmpty()) {
-                    out.println(nome + ": " + mensagem);
-                    chatArea.append(nome + ": " + mensagem + " ");
-                            messageField.setText("");
+                    // Adicionar o horário no formato [HH:mm]
+                    String formattedMessage = nome + ": " + mensagem;
+
+                    // Enviar para o servidor
+                    out.println(formattedMessage);
+
+                    // NÃO EXIBE NA TELA DO PRÓPRIO USUÁRIO (somente retorna do servidor)
+                    messageField.setText("");
                 }
             }
         });
