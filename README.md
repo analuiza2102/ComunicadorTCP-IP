@@ -1,4 +1,4 @@
-# 🛰️ ComunicadorTCPJ-IP
+# 🛰️ ComunicadorTCP-IP
 
 Aplicação Java baseada em TCP/IP que permite comunicação em tempo real entre múltiplos clientes e um servidor. Desenvolvida para auxiliar a Secretaria de Estado do Meio Ambiente no monitoramento de atividades ao longo do Rio Tietê.
 
